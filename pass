@@ -47,5 +47,6 @@ O nosso servidor não está a fazer log dos requests que recebe. Instala um midd
 (depende da tarefa #1)
 Altera a criação de polls para aceitar também uma data limite, após a qual não é possível votar.
 
+
 #7
 Pretendemos que a conta de um user fique bloqueada caso este falhe o login 3 vezes seguidas.
