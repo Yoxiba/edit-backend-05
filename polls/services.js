@@ -54,20 +54,27 @@ async function createPoll(value) {
 
 async function createVote(vote, pollId) {
   try {
-    // const poll = await db
-    //   .getDB()
-    //   .collection(db.pollsCollection)
-    //   .findOne({ _id: db.toMongoID(pollId) });
+    const poll = await db
+      .getDB()
+      .collection(db.pollsCollection)
+      .findOne({ _id: db.toMongoID(pollId) });
 
-    // if (!poll) {
-    //   return false;
+    if (!poll) {
+      return false;
+    }
+
+    const currentTime = new Date();
+    console.log(poll.dateLimit);
+    if (currentTime > poll.dateLimit) {
+      return false;
+    }
 
     const result = await db
       .getDB()
       .collection(db.pollsCollection)
       .findOneAndUpdate(
         { _id: db.toMongoID(pollId) },
-        { $set: { vote: vote.option } },
+        { $set: { vote: vote.option } }, //returnDocument: "after" é para retornar o valor inserido.
         { upsert: true, returnDocument: "after" }
       );
     console.log(vote, pollId);

@@ -3,6 +3,7 @@ const router = express.Router();
 const services = require("./services");
 const { string } = require("joi");
 const { createPollSchema, voteSchema } = require("./schemas");
+const middle = require("../middleware");
 
 router.get("/", async (req, res) => {
   const polls = await services.getAllPolls();
@@ -20,7 +21,7 @@ router.get("/:id", async (req, res) => {
   return res.status(404).json({ error: "poll not found" });
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", middle.auth, async (req, res) => {
   const pollId = req.params.id;
 
   const poll = await services.getPollById(pollId);
@@ -36,7 +37,7 @@ router.delete("/:id", async (req, res) => {
   res.status(200).json({ message: "poll deleted successfully" });
 });
 
-router.post("/", async (req, res) => {
+router.post("/", middle.auth, async (req, res) => {
   const { error, value } = createPollSchema.validate(req.body);
   if (error) {
     return res.status(400).json(error.details);
@@ -47,7 +48,7 @@ router.post("/", async (req, res) => {
   res.status(201).json(created);
 });
 
-router.post("/:id/vote", async (req, res) => {
+router.post("/:id/vote", middle.auth, async (req, res) => {
   const pollId = req.params.id;
 
   const { error, value } = voteSchema.validate(req.body);
@@ -55,7 +56,8 @@ router.post("/:id/vote", async (req, res) => {
     return res.status(400).json(error.details);
   }
   const poll = await services.createVote(value, pollId);
-  res.status(201).json(poll);
+  const status = !poll ? 401 : 201;
+  res.status(status).json(poll);
 });
 
 module.exports = router;

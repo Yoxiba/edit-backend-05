@@ -64,8 +64,10 @@ function generateAccessToken(userId) {
 function validateAccessToken(token) {
   try {
     jwt.verify(token, process.env.JWT_SECRET);
+    console.log(token, process.env.JWT_SECRET);
     return true;
   } catch (error) {
+    console.log(token, error);
     return false;
   }
 }
